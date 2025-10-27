@@ -1,0 +1,382 @@
+{
+  "name": "Drone_news_automation",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://news.google.com/rss/search?q=latest+drone+news",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        -240
+      ],
+      "id": "d8e94c94-cbf1-42c1-8cdb-8b4f47355912",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.slice(0, 5);\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        -240
+      ],
+      "id": "571ce20e-a64c-4458-8645-afc09c1cbe5a",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "url": "https://news.google.com/rss/search?q=uav+technology",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        192
+      ],
+      "id": "d906497f-1914-496b-9bb0-daa4cbcd15db",
+      "name": "RSS Read1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract only top 5 articles\nreturn items.slice(0, 5);\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        192
+      ],
+      "id": "9104a914-2564-4fa3-a66e-fbf99a10cd19",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "url": "https://news.google.com/rss/search?q=dgca+drones+india",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        816,
+        192
+      ],
+      "id": "29376f74-223d-4e20-8688-c1226a1afd5a",
+      "name": "RSS Read2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract only top 5 articles\nreturn items.slice(0, 5);\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        192
+      ],
+      "id": "f3fdfffc-6a3d-4ca4-9c51-f8f39ac66688",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        1424,
+        -224
+      ],
+      "id": "688a3471-ae98-4c39-8eac-575b1ecdf579",
+      "name": "When chat message received",
+      "webhookId": "8426477c-27dc-43eb-b9f0-2c4de8ac097c"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=“Generate a social media caption using the following structure:\n\nHook Line: [bold, attention-grabbing sentence] Summary: [1–2 line summary of the article] Hashtags: [3–6 relevant hashtags] Call-to-Action: [invite to read + article link] Image Reference: [suggested image description]",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1680,
+        -224
+      ],
+      "id": "75364dbe-0fea-4fee-9f1a-d89bc38cc4ec",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const j = item.json;\n  return {\n    json: {\n      title: j.title || \"\",\n      summary: j.summary || \"\",\n      hashtags: Array.isArray(j.hashtags) ? j.hashtags.join(\" \") : \"\",\n      keywords: Array.isArray(j.keywords) ? j.keywords.join(\", \") : \"\"\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1216,
+        -224
+      ],
+      "id": "e640dd0e-b5fc-4f6e-b86d-1f05b7fbfc97",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        -240
+      ],
+      "id": "922c6057-f81e-4fc1-a3ac-5f3fedffffe6",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1728,
+        -16
+      ],
+      "id": "49d2c287-5a4c-43bc-b233-c2f49a64d560",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "vVBCzfCbB7PknZKv",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://raw.githubusercontent.com/pallavi89197-alt/image/main/5-Malayalam-movies-to-watch-this-month-5-1.jpg",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2032,
+        -224
+      ],
+      "id": "21f5241a-16d6-41f7-bc41-c7350cc8af87",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  final_caption: [\n    $json[\"text\"] || \"\",\n    $json[\"caption\"] || \"\"\n  ].filter(Boolean).join(\"\\n\\n\")\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        -224
+      ],
+      "id": "6a285990-bb1f-4d5f-a54a-5f3da6e8cbda",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "resource": "directMessage",
+        "user": {
+          "__rl": true,
+          "value": "pallavi00756183",
+          "mode": "username"
+        },
+        "text": "={{ $json.final_caption }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        2448,
+        -224
+      ],
+      "id": "4aeedcd0-068d-4910-bc3b-1d0eff023db4",
+      "name": "Create Direct Message",
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": "DkUUvyZ9H6RwaTut",
+          "name": "X account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "RSS Read1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "RSS Read2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Create Direct Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "97803730-2d2d-4f42-a37a-3b8a5188ecc9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d7cff86124edea54a2e69e5f79ae2c13a3358b331a1c9c7216b5af23e373ba4e"
+  },
+  "id": "FSOsXPHXoexslxBK",
+  "tags": []
+}
